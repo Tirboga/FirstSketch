@@ -120,10 +120,10 @@ void SvetoDiod11()
 
 void SvetoDiod00()
 {
-  digitalWrite(RED, HIGH);
+  digitalWrite(RED, LOW);
   digitalWrite(GREEN, LOW); 
   digitalWrite(BLUE, LOW); 
-  digitalWrite(YELLOW, HIGH);
+  digitalWrite(YELLOW, LOW);
 }
 
 void SvetoDiod12()
