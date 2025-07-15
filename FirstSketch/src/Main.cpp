@@ -122,7 +122,7 @@ void SvetoDiod00()
 {
   digitalWrite(RED, LOW);
   digitalWrite(GREEN, LOW); 
-  digitalWrite(BLUE, LOW); 
+  digitalWrite(BLUE, HIGH); 
   digitalWrite(YELLOW, LOW);
 }
 
