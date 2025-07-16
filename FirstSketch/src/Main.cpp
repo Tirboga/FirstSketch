@@ -2,6 +2,7 @@
 #include <RichShieldTM1637.h>
 #include "Buzz.h"
 
+//Переменный-------------------------------------------------------------------------------
 int RED = 4;
 int GREEN = 5;
 int BLUE = 6;
@@ -13,11 +14,15 @@ int Knob = 0;
 
 int ButtonEnable1 = 1;
 int ButtonEnable2 = 1;
+int ButtonEnable11 = 0;
+int ButtonEnable22 = 0;
 int SD = 1;
 unsigned long timeSD;
+unsigned long timeBU;
 int8_t A,B,C,D;
 int KnobVal;
 
+//Объявление функций-------------------------------------------------------------------------
 void SvetoDiod11();
 void SvetoDiod00();
 void SvetoDiod12();
@@ -25,6 +30,7 @@ void display(int8_t A,int8_t B,int8_t C,int8_t D,int p1,int p2,int p3,int p4);
 void Knob1();
 void Buzz1();
 
+//Инициализация программы--------------------------------------------------------------------
 void setup() 
 {
   pinMode(RED,OUTPUT);
@@ -40,43 +46,71 @@ void setup()
   D=16;
   display(A,C,D,B,0,0,0,0);
   timeSD = millis();
+  timeBU = millis();
   pinMode(3,OUTPUT);
 }
 
-
+//Основная программа---------------------------------------------------------------------------
 void loop() 
 { 
   if (digitalRead(ButtonK1)==LOW)
   {
-      if(ButtonEnable1==1)
-      {
-          A++;
-          B=1;
-          D=16;
-          if(A>3){A=1;}
-          display(A,C,D,B,0,0,0,0);
-          ButtonEnable1=0;
-      }
+    if(ButtonEnable1==1)
+    {
+      ButtonEnable1=0;
+      timeBU = millis();
+      timeSD = millis(); 
+      A++;
+      B=1;
+      D=16;
+      if(A>3){A=1;}
+      display(A,C,D,B,0,0,0,0);
+    }
   }
   else
   {
-  ButtonEnable1=1; 
+    if(millis()-timeBU>50)
+    {
+      if(ButtonEnable11==0)
+      {
+        ButtonEnable11=1;
+        timeBU = millis();
+      }
+      else
+      {
+        ButtonEnable1=1;
+        ButtonEnable11=0;
+      }
+    }
   }
   
   if (digitalRead(ButtonK2)==LOW)
   {
-      if(ButtonEnable2==1)
-      {
-          B++;
-          D=16;
-          if(B>3){B=1;}
-          display(A,C,D,B,0,0,0,0);
-          ButtonEnable2=0;
-      }
+    if(ButtonEnable2==1)
+    {
+      ButtonEnable2=0;
+      timeBU = millis();
+      B++;
+      D=16;
+      if(B>3){B=1;}
+      display(A,C,D,B,0,0,0,0);
+    }
   }
   else
   {
-  ButtonEnable2=1;
+    if(millis()-timeBU>50)
+    {
+      if(ButtonEnable22==0)
+      {
+        ButtonEnable22=1;
+        timeBU = millis();
+      }
+      else
+      {
+        ButtonEnable2=1;
+        ButtonEnable22=0;
+      }
+    }
   }
 
   switch(A)
@@ -110,6 +144,8 @@ void loop()
   }
 }
 
+//Функции-------------------------------------------------------------------------------------
+//Светодиоды----------------------------------------------------------------------------------
 void SvetoDiod11()
 {
   digitalWrite(RED, HIGH);
@@ -147,6 +183,7 @@ void SvetoDiod12()
   }
 }
 
+//Дисплей---------------------------------------------------------------------------------
 void display(int8_t A,int8_t B,int8_t C,int8_t D,int p1,int p2,int p3,int p4)
 {
   disp._PointFlag = p1;
@@ -159,6 +196,7 @@ void display(int8_t A,int8_t B,int8_t C,int8_t D,int p1,int p2,int p3,int p4)
   disp.display(0x03,D);
 }
 
+//Переменный резистор---------------------------------------------------------------------
 void Knob1()
 {
   int t1;
@@ -170,6 +208,7 @@ void Knob1()
   display(A,C,t1,t2,0,0,1,0);
 }
 
+//Динамик---------------------------------------------------------------------------------
 void Buzz1()
 {
   long delayValue;
@@ -195,3 +234,5 @@ void Buzz1()
   }
   
 }
+
+//--------
