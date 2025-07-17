@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <RichShieldTM1637.h>
 #include "Buzz.h"
+#include <math.h>
 
 //Переменный-------------------------------------------------------------------------------
 int RED = 4;
@@ -11,6 +12,7 @@ int ButtonK1 = 9;
 int ButtonK2 = 8;
 TM1637 disp(10,11);
 int Knob = 0;
+int LDR = 2;
 
 int ButtonEnable1 = 1;
 int ButtonEnable2 = 1;
@@ -21,6 +23,7 @@ unsigned long timeSD;
 unsigned long timeBU;
 int8_t A,B,C,D;
 int KnobVal;
+int LDRVal;
 
 //Объявление функций-------------------------------------------------------------------------
 void SvetoDiod11();
@@ -29,6 +32,7 @@ void SvetoDiod12();
 void display(int8_t A,int8_t B,int8_t C,int8_t D,int p1,int p2,int p3,int p4);
 void Knob1();
 void Buzz1();
+void LDR1();
 
 //Инициализация программы--------------------------------------------------------------------
 void setup() 
@@ -63,7 +67,7 @@ void loop()
       A++;
       B=1;
       D=16;
-      if(A>3){A=1;}
+      if(A>4){A=1;}
       display(A,C,D,B,0,0,0,0);
     }
   }
@@ -137,6 +141,14 @@ void loop()
       switch(B)
       {
         case 1: Buzz1(); break;
+      }
+    break;
+
+    case 4:
+      SvetoDiod00();
+      switch(B)
+      {
+        case 1: LDR1(); break;
       }
     break;
     
@@ -235,4 +247,24 @@ void Buzz1()
   
 }
 
-//--------
+//Датчик освещенности-------------------------------------------------------------------------------
+void LDR1()
+{
+  int t1;
+  int t2;
+  int t3;
+  float Rsensor;
+  float lux;
+
+  LDRVal = analogRead(LDR);
+  Rsensor=(float)(1023-LDRVal)*10/LDRVal;
+  if(Rsensor>99){Rsensor=99;}
+
+  lux = 325*pow(Rsensor,-1.4);
+  if(lux>999){lux=999;}
+
+  t1 = lux/100;lux=lux-t1*100;
+  t2 = lux/10;lux=lux-t2*10;
+  t3 = lux;
+  display(A,t1,t2,t3,1,0,0,0);
+}
