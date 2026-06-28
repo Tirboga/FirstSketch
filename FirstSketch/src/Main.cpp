@@ -12,6 +12,7 @@ int ButtonK1 = 9;
 int ButtonK2 = 8;
 TM1637 disp(10,11);
 int Knob = 0;
+int NTC = 1;
 int LDR = 2;
 
 int ButtonEnable1 = 1;
@@ -24,6 +25,7 @@ unsigned long timeBU;
 int8_t A,B,C,D;
 int KnobVal;
 int LDRVal;
+int NTCVal;
 
 //Объявление функций-------------------------------------------------------------------------
 void SvetoDiod11();
@@ -33,6 +35,7 @@ void display(int8_t A,int8_t B,int8_t C,int8_t D,int p1,int p2,int p3,int p4);
 void Knob1();
 void Buzz1();
 void LDR1();
+void NTC1();
 
 //Инициализация программы--------------------------------------------------------------------
 void setup() 
@@ -67,7 +70,7 @@ void loop()
       A++;
       B=1;
       D=16;
-      if(A>4){A=1;}
+      if(A>5){A=1;}
       display(A,C,D,B,0,0,0,0);
     }
   }
@@ -151,6 +154,14 @@ void loop()
         case 1: LDR1(); break;
       }
     break;
+
+    case 5:
+      SvetoDiod00();
+      switch(B)
+      {
+        case 1: NTC1(); break;
+      }
+    break;
     
     default: SvetoDiod00(); break;
   }
@@ -170,7 +181,7 @@ void SvetoDiod00()
 {
   digitalWrite(RED, LOW);
   digitalWrite(GREEN, LOW); 
-  digitalWrite(BLUE, HIGH); 
+  digitalWrite(BLUE, LOW); 
   digitalWrite(YELLOW, LOW);
 }
 
@@ -267,4 +278,22 @@ void LDR1()
   t2 = lux/10;lux=lux-t2*10;
   t3 = lux;
   display(A,t1,t2,t3,1,0,0,0);
+}
+
+//Датчик температуры-------------------------------------------------------------------------------
+void NTC1()
+{
+  int t1;
+  int t2;
+  int t3;
+  float Rsensor;
+  float temp;
+
+  NTCVal = analogRead(NTC);
+  Rsensor = (float)NTCVal/((1023-NTCVal)/10);
+  temp = 1/(log(Rsensor*1000/10000)/3950+1/298.15)-273.15;
+  t1 = temp/100; temp = temp - t1*100;
+  t2 = temp/10; temp = temp - t2*10;
+  t3 = temp;
+  display(A,C,t2,t3,0,0,0,0);
 }
